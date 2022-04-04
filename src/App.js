@@ -1,27 +1,24 @@
 import "./styles.css";
-import React, { useEffect, useRef } from "react";
+import React from "react";
 
-const useClick = (onClick) => {
-  const element = useRef();
-  if (typeof onClick !== "function") return; // 예외처리
-  useEffect(() => {
-    if (element.current) element.current.addEventListener("click", onClick);
-    //DidMount 1번 호출
-    return () => {
-      if (element.current)
-        element.current.removeEventListener("click", onClick);
-    };
-    // Unmount 1번 호출
-  }, []);
-
-  return element;
+const useConfirm = (message = "", callback, rejection) => {
+  if (typeof callback !== "function" || typeof rejection !== "function") {
+    return; // 함수형 프로그래밍 잊지 말기
+  }
+  const alertAction = () => {
+    if (confirm(message)) callback();
+    else rejection();
+  };
+  return alertAction;
 };
 
 export default function App() {
-  const title = useClick(console.log("h1h1h1"));
+  const OkMessage = () => console.log("Press OK button !");
+  const AbortMessage = () => console.log("Press Abort Button!");
+  const { alert } = useConfirm("Press Any Button", OkMessage, AbortMessage);
   return (
     <div className="App">
-      <h1 ref={title}> Hello hook world! </h1>
+      <button onClick={alert}> Hello hook world! </button>
     </div>
   );
 }
