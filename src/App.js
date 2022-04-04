@@ -1,13 +1,27 @@
 import "./styles.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
+
+const useClick = (onClick) => {
+  const element = useRef();
+  if (typeof onClick !== "function") return; // 예외처리
+  useEffect(() => {
+    if (element.current) element.current.addEventListener("click", onClick);
+    //DidMount 1번 호출
+    return () => {
+      if (element.current)
+        element.current.removeEventListener("click", onClick);
+    };
+    // Unmount 1번 호출
+  }, []);
+
+  return element;
+};
 
 export default function App() {
-  const refExample = useRef();
-  setTimeout(()=>refExample.current.focus(), 5000);
+  const title = useClick(console.log("h1h1h1"));
   return (
     <div className="App">
-      <h1> "This is useTabs Hooks!" </h1>
-      <input ref={refExample} placeholder="5초 후 자동 focused"></input> 
+      <h1 ref={title}> Hello hook world! </h1>
     </div>
   );
 }
